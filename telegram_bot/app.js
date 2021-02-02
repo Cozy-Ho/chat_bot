@@ -1,29 +1,66 @@
-const TelegramBot = require("node-telegram-bot-api");
 import config from "./config/config";
-// replace the value below with the Telegram token you receive from @BotFather
-const token = config.token;
+import request from "request";
+import uuidv4 from "uuid/v4";
+import TelegramBot from "node-telegram-bot-api";
+import cron from "node-cron";
 
-// Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(token, { polling: true });
+const bot_token = config.token;
+const chatId = config.chat_id;
 
-// Matches "/echo [whatever]"
-bot.onText(/\/echo (.+)/, (msg, match) => {
-  // 'msg' is the received Message from Telegram
-  // 'match' is the result of executing the regexp above on the text content
-  // of the message
+const bot = new TelegramBot(bot_token, {polling: true});
 
-  const chatId = msg.chat.id;
-  const resp = match[1]; // the captured "whatever"
+const sign = require('jsonwebtoken').sign
 
-  // send back the matched "whatever" to the chat
-  bot.sendMessage(chatId, resp);
-});
+const access_key = config.UPBIT_OPEN_API_ACCESS_KEY
+const secret_key = config.UPBIT_OPEN_API_SECRET_KEY
+const server_url = config.UPBIT_OPEN_API_SERVER_URL
 
-// Listen for any kind of message. There are different kinds of
-// messages.
-bot.on("message", (msg) => {
-  const chatId = msg.chat.id;
+const payload = {
+    access_key: access_key,
+    nonce: uuidv4(),
+}
 
-  // send a message to the chat acknowledging receipt of their message
-  bot.sendMessage(chatId, "Received your message");
-});
+const token = sign(payload, secret_key)
+
+// const options = {
+//     method: "GET",
+//     url: server_url + "/v1/accounts",
+//     headers: {Authorization: `Bearer ${token}`},
+// }
+
+// request(options, (error, response, body) => {
+//     if (error) throw new Error(error)
+//     console.log(body)
+//     sendMsg(body);
+// })
+
+cron.schedule('0 * * * *', function(){
+    getCandle();
+})
+
+function getCandle(){
+    let options = {
+        method: "GET",
+        url: server_url + '/v1/candles/minutes/30',
+        qs: {market: 'KRW-BTC', count: '2'},
+        headers: {Authorization: `Bearer ${token}`},
+    }
+    request(options, (error, response, body) => {
+        if (error) throw new Error(error)
+        console.log(JSON.parse(body));
+        let data = JSON.parse(body);
+        let text= "";
+        for(let i=0; i<data.length;i++){
+            text += `\n일자: ${data[i].candle_date_time_kst}\n시가: ${data[i].opening_price}\n고가: ${data[i].high_price}\n저가: ${data[i].low_price}\n종가: ${data[i].trade_price}`
+        }
+
+        console.log(text);
+        sendMsg(text);
+
+    })
+}
+
+
+function sendMsg(msg){
+    bot.sendMessage(chatId,msg);
+}
