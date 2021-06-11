@@ -1,10 +1,11 @@
-import uuidv4 from "uuid/v4.js";
 import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
 import dotenv from "dotenv";
-import command from "./commands/index.js";
-import minioClient from "./databases/minio.js";
+import { parseCommand } from "./commands/index.js";
+import { connect } from "./databases/mongo.js";
+// import minioClient from "./databases/minio.js";
 
+await connect();
 dotenv.config();
 let config = process.env;
 let fileDownloadDir = "";
@@ -40,10 +41,17 @@ cron.schedule("1/* * * * *", function () {
 
 function parseMsg(msg) {
   if (msg.startsWith("!")) {
-    let comm = msg.substring(1);
-    sendMsg(command.execute(comm));
+    let args = msg.split(" ");
+
+    parseCommand(args)
+      .then(res => {
+        sendMsg(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   } else {
-    sendMsg("received : " + msg + "\n 아직 개발중이얌 >_< ");
+    // sendMsg("received : " + msg + "\n 아직 개발중이얌 >_< ");
   }
 }
 

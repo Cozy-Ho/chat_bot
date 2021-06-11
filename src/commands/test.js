@@ -1,7 +1,3 @@
-function testfunc() {
+export function test() {
   return "test command received!!";
 }
-
-export default {
-  testfunc
-};

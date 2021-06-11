@@ -4,7 +4,7 @@ import Minio from "minio";
 dotenv.config();
 
 let config = process.env;
-let bucketName = "uploads";
+// let bucketName = "uploads";
 
 const minioClient = new Minio.Client({
   endPoint: config.END_POINT,
@@ -23,7 +23,7 @@ function upload() {
       if (error) {
         return console.log(error);
       }
-      res.send(`https://play.minio.io:9000/test/${files.image.name}`);
+      return "success";
     }
   );
 }
