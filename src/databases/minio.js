@@ -7,11 +7,11 @@ let config = process.env;
 // let bucketName = "uploads";
 
 const minioClient = new Minio.Client({
-  endPoint: config.END_POINT,
+  endPoint: config.MINIO_URI,
   port: parseInt(config.PORT, 10),
   useSSL: false,
-  accessKey: config.ACC_KEY,
-  secretKey: config.ACC_SEC_KEY
+  accessKey: config.MINIO_KEY,
+  secretKey: config.MINIO_SEC
 });
 
 function upload() {

@@ -19,6 +19,7 @@
   },
   "scripts": {
     "config": "cp -av envs/default.env .env",
+    "debug": "nodemon --inspect src/standalone.js",
     "start:execute": "nodemon src/standalone.js",
     "start": "run-s config start:execute"
   },

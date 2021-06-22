@@ -6,12 +6,13 @@ dotenv.config();
 
 let config = process.env;
 
-const MONGO_URI = "mongodb://" + config.END_POINT + ":" + config.MONGO_PORT;
+const MONGO_CONN_URI =
+  "mongodb://" + config.MONGO_URI + ":" + config.MONGO_PORT;
 
 export async function connect() {
   await mongoose
     .connect(
-      MONGO_URI,
+      MONGO_CONN_URI,
       { user: config.MONGO_ID, pass: config.MONGO_PW },
       { useNewUrlParser: true }
     )
