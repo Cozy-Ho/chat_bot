@@ -7,10 +7,9 @@ Node.js Chatbot practice.
 create envs/default.env
 
 ```
-# mongodb://mongoUser:mongoqwe!%40%23@23alice.duckdns.org:9702/clever?authSource=admin
-MONGO_ID=mongoUser
-MONGO_PW="mongoqwe!@#"
-MONGO_PORT=9702
+MONGO_ID=
+MONGO_PW=
+MONGO_PORT=
 
 # telegram-bot-token
 BOT_TOKEN=
